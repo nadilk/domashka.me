@@ -1,0 +1,23 @@
+{
+    "name": "karimov.n/domashka.me",
+    "autoload": {
+        "psr-4": {
+            "App\\": "protected/"
+        }
+    },
+    "authors": [
+        {
+            "name": "nadilk",
+            "email": "nadilk@yandex.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "yiisoft/yii": "1.1.*",
+        "yiiext/migrate-command": ">=0.8",
+        "cboden/ratchet": "^0.4.3",
+        "react/zmq": "0.2.*|0.3.*",
+        "ext-zmq": "*",
+        "ext-json": "*"
+    }
+}
