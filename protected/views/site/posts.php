@@ -3,14 +3,18 @@
 
 $this->pageTitle = Yii::app()->name . ' Posts';
 ?>
+<!-- CSS -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+<!-- Default theme -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
 <ul id="posts">
     <?php /** @var \App\models\PostRecord[] $posts */
     foreach ($posts as $post) { ?>
         <li data-id="<?= $post->id ?>" class="post">
             <div class="edit-hide"><?= $post->content ?></div>
             <form action="/index.php?r=site/postedit" method="post">
-                <input class="edit-show"  type="hidden" name="id" value="<?= $post->id ?>">
-                <textarea class="edit-show"  name="content"><?= $post->content ?></textarea>
+                <input class="edit-show" type="hidden" name="id" value="<?= $post->id ?>">
+                <textarea class="edit-show" name="content"><?= $post->content ?></textarea>
                 <br class="edit-show">
                 <span style="color: gray"><?= $post->created_at ?></span>
                 <br>
@@ -25,16 +29,20 @@ $this->pageTitle = Yii::app()->name . ' Posts';
     <?php } ?>
 </ul>
 <hr>
+<!-- JavaScript -->
+<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 <script
         src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
         crossorigin="anonymous"></script>
 <script src="/js/autobahn.js"></script>
 <script>
-    var conn = new ab.Session('ws://localhost:8083',
-        function () {
-            conn.subscribe('posts', function (topic, data) {
-                $('#posts').append(`
+    function initWebsocket(port) {
+        const conn = new ab.Session('ws://localhost:' + port,
+            function () {
+                conn.subscribe('posts', function (topic, data) {
+                    alertify.alert('New post!')
+                    $('#posts').append(`
                     <li data-id="${data.id}" class="post">
                         <div class="edit-hide">${data.content}</div>
                         <form action="/index.php?r=site/postedit" method="post">
@@ -53,15 +61,18 @@ $this->pageTitle = Yii::app()->name . ' Posts';
                     </li>
                 `)
 
-            });
-        },
-        function () {
-            console.warn('WebSocket connection closed');
-        },
-        {'skipSubprotocolCheck': true}
-    );
+                });
+            },
+            function () {
+                console.warn('WebSocket connection closed');
+            },
+            {'skipSubprotocolCheck': true}
+        );
+    }
 
-    $('ul').click('.edit',function(e){
+    initWebsocket(8083);
+
+    $('ul').click('.edit', function (e) {
         $(e.target).parent().addClass('editing');
     })
 </script>
